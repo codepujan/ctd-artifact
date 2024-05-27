@@ -1,0 +1,7 @@
+transformers@git+https://github.com/huggingface/transformers.git@0b192de1f353b0e04dad4813e02e2c672de077be
+bitsandbytes==0.39.1
+peft@git+https://github.com/huggingface/peft.git@52ff0cde9f2cc64059e171c2cfd94512914c85df
+torch==2.0.1
+huggingface-hub==0.23.1
+datasets==2.9.0
+evaluate==0.4.0
