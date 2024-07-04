@@ -3,6 +3,9 @@ from peft import PeftModel, PeftConfig
 from transformers import AutoModelForSeq2SeqLM
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
+cache_dir="./"
+
+
 #Load the Peft Config from paper's CTD repo 
 config = PeftConfig.from_pretrained("ppaudel/ctd-flant5-xxl")
 
@@ -10,7 +13,6 @@ tokenizer = AutoTokenizer.from_pretrained(config.base_model_name_or_path,cache_d
 
 
 #Change this if you want some other directory to use as cache 
-cache_dir="./"
 base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",load_in_8bit=True,device_map={"":0},cache_dir=cache_dir)
 #Combine model 
 model = PeftModel.from_pretrained(base_model, "ppaudel/ctd-flant5-xxl",device_map={"":0})

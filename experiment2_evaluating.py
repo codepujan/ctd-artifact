@@ -6,7 +6,8 @@ from transformers import AutoModelForSeq2SeqLM
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
-tokenizer = AutoTokenizer.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",cache_dir="./")
+cache_dir="./"
+tokenizer = AutoTokenizer.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",cache_dir=cache_dir)
 
 
 
@@ -75,10 +76,10 @@ def infer_and_stat_full(df,input_model,batch_size):
                         Statement: {3}.
                         Response:
                     '''
-                prompts.append(input_text.format(row['consensus'],row['supporting'],row['refuting'],row['text']))#Config with consensus instead of supporting performs better
+                prompts.append(input_text.format(row['consensus'],row['supporting'],row['refuting'],row['text']))
                 results_gt.append({"text":text,"gt":row['stance']})
     #Now infer
-    prompts_chunks= list(chunk(prompts, batch_size))#batch size 100 works on all cases except stanceosaurus 
+    prompts_chunks= list(chunk(prompts, batch_size))
     results=[]
     for prompts in tqdm(prompts_chunks):
         input_ids = tokenizer(prompts, return_tensors="pt",padding=True,truncation=True,max_length=512).input_ids.to("cuda")
@@ -108,23 +109,23 @@ print("Running bootstrapped CTD on Climate Skepticism dataset")
 # huggingface hub model id
 
 # load model from the hub
-bootstrapped_model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir="./")
+bootstrapped_model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir=cache_dir)
 
-infer_and_stat_full(df,bootstrapped_model,100)
+infer_and_stat_full(df,bootstrapped_model,50)
 
 
 del bootstrapped_model
 torch.cuda.empty_cache()
 print("-----")
 config = PeftConfig.from_pretrained("ppaudel/ctd-flant5-xxl")
-base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",load_in_8bit=True,device_map={"":0},cache_dir="/projectnb/llm-stance/models/")
+base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",load_in_8bit=True,device_map={"":0},cache_dir=cache_dir)
 finetuned_model = PeftModel.from_pretrained(base_model, "ppaudel/ctd-flant5-xxl",device_map={"":0})
 finetuned_model.eval()
 print("Peft model loaded")
 
 print("Now Running finetuned-CTD on Climate Skepticism dataset")
 
-infer_and_stat_full(df,finetuned_model,100)
+infer_and_stat_full(df,finetuned_model,50)
 
 
 del finetuned_model
@@ -137,10 +138,10 @@ print("Running bootstrapped CTD on COVID-CQ")
 model_id = "philschmid/flan-t5-xxl-sharded-fp16"
 
 # load model from the hub
-bootstrapped_model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir="./")
+bootstrapped_model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir=cache_dir)
 df = pd.read_csv("hf://datasets/ppaudel/dataset_covid_cq/dataset_covid_cq_triplet.csv")
 
-infer_and_stat_full(df,bootstrapped_model,100)
+infer_and_stat_full(df,bootstrapped_model,50)
 
 del bootstrapped_model
 torch.cuda.empty_cache()
@@ -150,11 +151,11 @@ print("-----")
 
 
 config = PeftConfig.from_pretrained("ppaudel/ctd-flant5-xxl")
-base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",load_in_8bit=True,device_map={"":0},cache_dir="./")
+base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",load_in_8bit=True,device_map={"":0},cache_dir=cache_dir)
 finetuned_model = PeftModel.from_pretrained(base_model, "ppaudel/ctd-flant5-xxl",device_map={"":0})
 finetuned_model.eval()
 
-infer_and_stat_full(df,finetuned_model,100)
+infer_and_stat_full(df,finetuned_model,50)
 
 del finetuned_model
 torch.cuda.empty_cache()
@@ -165,7 +166,7 @@ df=pd.read_csv("hf://datasets/ppaudel/twitter_factchecking_test/dataset_twitter_
 
 #
 # load model from the hub
-bootstrapped_model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir="./")
+bootstrapped_model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir=cache_dir)
 
 infer_and_stat_full(df,bootstrapped_model,50)
 
@@ -176,7 +177,7 @@ print("------")
 print("Running finetuned CTD on Stanceosaurus")
 
 config = PeftConfig.from_pretrained("ppaudel/ctd-flant5-xxl")
-base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",load_in_8bit=True,device_map={"":0},cache_dir="./")
+base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",load_in_8bit=True,device_map={"":0},cache_dir=cache_dir)
 finetuned_model = PeftModel.from_pretrained(base_model, "ppaudel/ctd-flant5-xxl",device_map={"":0})
 finetuned_model.eval()
 

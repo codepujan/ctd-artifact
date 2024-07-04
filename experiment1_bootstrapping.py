@@ -5,13 +5,14 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 # huggingface hub model id
 model_id = "philschmid/flan-t5-xxl-sharded-fp16"
+cache_dir="./"
 
 # load model from the hub
-model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir="./")
+model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir=cache_dir)
 
 import pandas as pd
 df=pd.read_csv("hf://datasets/ppaudel/dataset_climate/dataset_climate_triplet.csv")
-tokenizer = AutoTokenizer.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",cache_dir="./")
+tokenizer = AutoTokenizer.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",cache_dir=cache_dir)
 
 
 def compute_f1(precision,recall):
@@ -66,7 +67,7 @@ def infer_and_stat_without_marker(df):
                 prompts.append(input_text.format(row['consensus'],row['text']))
                 results_gt.append({"text":text,"gt":row['stance']})
     #Now infer
-    prompts_chunks= list(chunk(prompts, 100))
+    prompts_chunks= list(chunk(prompts, 50))
     results=[]
     for prompts in tqdm(prompts_chunks):
         input_ids = tokenizer(prompts, return_tensors="pt",padding=True,truncation=True,max_length=512).input_ids.to("cuda")
@@ -105,7 +106,7 @@ def infer_and_stat_without_consensus(df):
                 prompts.append(input_text.format(row['consensus'],row['refuting'],row['text']))#Config with consensus instead of supporting performs better
                 results_gt.append({"text":text,"gt":row['stance']})
     #Now infer
-    prompts_chunks= list(chunk(prompts, 100))#Try 100?
+    prompts_chunks= list(chunk(prompts, 50))
     results=[]
     for prompts in tqdm(prompts_chunks):
         input_ids = tokenizer(prompts, return_tensors="pt",padding=True,truncation=True,max_length=512).input_ids.to("cuda")
@@ -143,7 +144,7 @@ def infer_and_stat_full(df):
                 prompts.append(input_text.format(row['consensus'],row['supporting'],row['refuting'],row['text']))#Config with consensus instead of supporting performs better
                 results_gt.append({"text":text,"gt":row['stance']})
     #Now infer
-    prompts_chunks= list(chunk(prompts, 100))
+    prompts_chunks= list(chunk(prompts, 50))
     results=[]
     for prompts in tqdm(prompts_chunks):
         input_ids = tokenizer(prompts, return_tensors="pt",padding=True,truncation=True,max_length=512).input_ids.to("cuda")

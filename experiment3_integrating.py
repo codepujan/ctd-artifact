@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
 
-print("Just Making sure GPU is available through Nvidia SMI ! ")
-
-
 # In[1]:
 
 
@@ -22,9 +19,9 @@ import gc,torch
 
 # In[18]:
 
-
+cache_dir="./"
 config = PeftConfig.from_pretrained("ppaudel/ctd-flant5-xxl")
-base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",load_in_8bit=True,device_map={"":0},cache_dir="./")
+base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",load_in_8bit=True,device_map={"":0},cache_dir=cache_dir)
 model = PeftModel.from_pretrained(base_model, "ppaudel/ctd-flant5-xxl",device_map={"":0})
 model.eval()
 
@@ -34,7 +31,7 @@ print("Peft model loaded")
 # In[19]:
 
 
-tokenizer = AutoTokenizer.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",cache_dir="./")
+tokenizer = AutoTokenizer.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",cache_dir=cache_dir)
 
 
 # In[2]:
