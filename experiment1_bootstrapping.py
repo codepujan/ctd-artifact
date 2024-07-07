@@ -6,6 +6,7 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 # huggingface hub model id
 model_id = "philschmid/flan-t5-xxl-sharded-fp16"
 cache_dir="./"
+BATCH_SIZE=50
 
 # load model from the hub
 model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir=cache_dir)
@@ -106,7 +107,7 @@ def infer_and_stat_without_consensus(df):
                 prompts.append(input_text.format(row['consensus'],row['refuting'],row['text']))#Config with consensus instead of supporting performs better
                 results_gt.append({"text":text,"gt":row['stance']})
     #Now infer
-    prompts_chunks= list(chunk(prompts, 50))
+    prompts_chunks= list(chunk(prompts, BATCH_SIZE))
     results=[]
     for prompts in tqdm(prompts_chunks):
         input_ids = tokenizer(prompts, return_tensors="pt",padding=True,truncation=True,max_length=512).input_ids.to("cuda")
@@ -144,7 +145,7 @@ def infer_and_stat_full(df):
                 prompts.append(input_text.format(row['consensus'],row['supporting'],row['refuting'],row['text']))#Config with consensus instead of supporting performs better
                 results_gt.append({"text":text,"gt":row['stance']})
     #Now infer
-    prompts_chunks= list(chunk(prompts, 50))
+    prompts_chunks= list(chunk(prompts, BATCH_SIZE))
     results=[]
     for prompts in tqdm(prompts_chunks):
         input_ids = tokenizer(prompts, return_tensors="pt",padding=True,truncation=True,max_length=512).input_ids.to("cuda")
