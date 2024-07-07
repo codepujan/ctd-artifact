@@ -25,4 +25,8 @@ You can run `python basic_test.py` to make sure the necessary dependencies are m
  2. `experiment2_evaluating.py`
  3. `experiment3_integrating.py`
 
- 
+ ---
+ Issues you might run into and workarounds 
+
+ 1. CUDA OOM error
+    Try decreasing the value of `BATCH_SIZE` on the Python scripts. For 24G of memory, batch size of 50 should work fine. 
