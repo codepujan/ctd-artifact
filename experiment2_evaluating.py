@@ -7,6 +7,8 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
 cache_dir="./"
+#Decrease batch size if you run into OOM errors 
+BATCH_SIZE=50
 tokenizer = AutoTokenizer.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",cache_dir=cache_dir)
 
 
@@ -111,7 +113,7 @@ print("Running bootstrapped CTD on Climate Skepticism dataset")
 # load model from the hub
 bootstrapped_model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir=cache_dir)
 
-infer_and_stat_full(df,bootstrapped_model,50)
+infer_and_stat_full(df,bootstrapped_model,BATCH_SIZE)
 
 
 del bootstrapped_model
@@ -125,7 +127,7 @@ print("Peft model loaded")
 
 print("Now Running finetuned-CTD on Climate Skepticism dataset")
 
-infer_and_stat_full(df,finetuned_model,50)
+infer_and_stat_full(df,finetuned_model,BATCH_SIZE)
 
 
 del finetuned_model
@@ -141,7 +143,7 @@ model_id = "philschmid/flan-t5-xxl-sharded-fp16"
 bootstrapped_model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir=cache_dir)
 df = pd.read_csv("hf://datasets/ppaudel/dataset_covid_cq/dataset_covid_cq_triplet.csv")
 
-infer_and_stat_full(df,bootstrapped_model,50)
+infer_and_stat_full(df,bootstrapped_model,BATCH_SIZE)
 
 del bootstrapped_model
 torch.cuda.empty_cache()
@@ -155,7 +157,7 @@ base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-shard
 finetuned_model = PeftModel.from_pretrained(base_model, "ppaudel/ctd-flant5-xxl",device_map={"":0})
 finetuned_model.eval()
 
-infer_and_stat_full(df,finetuned_model,50)
+infer_and_stat_full(df,finetuned_model,BATCH_SIZE)
 
 del finetuned_model
 torch.cuda.empty_cache()
@@ -168,7 +170,7 @@ df=pd.read_csv("hf://datasets/ppaudel/twitter_factchecking_test/dataset_twitter_
 # load model from the hub
 bootstrapped_model = AutoModelForSeq2SeqLM.from_pretrained(model_id, load_in_8bit=True, device_map="auto",cache_dir=cache_dir)
 
-infer_and_stat_full(df,bootstrapped_model,50)
+infer_and_stat_full(df,bootstrapped_model,BATCH_SIZE)
 
 del bootstrapped_model
 torch.cuda.empty_cache()
@@ -181,4 +183,4 @@ base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-shard
 finetuned_model = PeftModel.from_pretrained(base_model, "ppaudel/ctd-flant5-xxl",device_map={"":0})
 finetuned_model.eval()
 
-infer_and_stat_full(df,finetuned_model,50)
+infer_and_stat_full(df,finetuned_model,BATCH_SIZE)
