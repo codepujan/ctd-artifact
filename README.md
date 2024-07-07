@@ -28,5 +28,6 @@ You can run `python basic_test.py` to make sure the necessary dependencies are m
  ---
  Issues you might run into and workarounds 
 
- 1. CUDA OOM error
-    Try decreasing the value of `BATCH_SIZE` on the Python scripts. For 24G of memory, batch size of 50 should work fine. 
+Issue #1 CUDA OOM error
+    
+ Workaround: Try decreasing the value of `BATCH_SIZE` on the Python scripts. For 24G of memory, batch size of 50 should work. 
