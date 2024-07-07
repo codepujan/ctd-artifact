@@ -20,6 +20,7 @@ import gc,torch
 # In[18]:
 
 cache_dir="./"
+BATCH_SIZE=50
 config = PeftConfig.from_pretrained("ppaudel/ctd-flant5-xxl")
 base_model = AutoModelForSeq2SeqLM.from_pretrained("philschmid/flan-t5-xxl-sharded-fp16",load_in_8bit=True,device_map={"":0},cache_dir=cache_dir)
 model = PeftModel.from_pretrained(base_model, "ppaudel/ctd-flant5-xxl",device_map={"":0})
@@ -119,7 +120,7 @@ def infer_and_stat(df):
                 prompts.append(input_text.format(row['consensus'],row['refuting'],row['supporting'],row['text']))
                 results_gt.append({"text":text,"gt":row['stance']})
     #Now infer
-    prompts_chunks= list(chunk(prompts, 50))
+    prompts_chunks= list(chunk(prompts, BATCH_SIZE))
     results=[]
     for prompts in tqdm(prompts_chunks):
         input_ids = tokenizer(prompts, return_tensors="pt",padding=True,truncation=True,max_length=512).input_ids.to("cuda")
