@@ -1,5 +1,5 @@
 
-# CTD-ARTIFACTIFACT
+# CTD-ARTIFACT
 This repository contains companion scripts to run artifact evaluation for our Usenix 24 paper. 
  --
  #### Hardware dependencies
