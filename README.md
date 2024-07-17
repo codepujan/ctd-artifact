@@ -31,3 +31,14 @@ You can run `python basic_test.py` to make sure the necessary dependencies are m
 Issue #1 CUDA OOM error
     
  Workaround: Try decreasing the value of `BATCH_SIZE` on the Python scripts. For 24G of memory, batch size of 50 should work. 
+
+ ---
+### Citing The Paper
+```
+@inproceedings {sec24:ctd,
+    title = {Enabling Contextual Soft Moderation on Social Media through Contrastive Textual Deviation},
+    booktitle = {33rd USENIX Security Symposium (USENIX Security)},
+    year = {2024},
+    author={Pujan Paudel, Mohammad Hammas Saeed, Rebecca Auger, Chris Wells, and Gianluca Stringhini}
+}
+
